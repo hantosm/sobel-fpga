@@ -20,7 +20,10 @@ proc checkRequiredFiles { origin_dir} {
   set files [list \
  "[file normalize "$origin_dir/sources/dp_ram.v"]"\
  "[file normalize "$origin_dir/sources/line_delay.v"]"\
+ "[file normalize "$origin_dir/sources/line_buffer.v"]"\
  "[file normalize "$origin_dir/sources/top.v"]"\
+ "[file normalize "$origin_dir/sources/line_buffer.v"]"\
+ "[file normalize "$origin_dir/testbench/line_buffer_tb.v"]"\
  "[file normalize "$origin_dir/testbench/line_delay_tb.v"]"\
   ]
   foreach ifile $files {
@@ -129,7 +132,7 @@ set_property -name "revised_directory_structure" -value "1" -objects $obj
 set_property -name "sim.central_dir" -value "$proj_dir/${_xil_proj_name_}.ip_user_files" -objects $obj
 set_property -name "sim.ip.auto_export_scripts" -value "1" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
-set_property -name "webtalk.xsim_launch_sim" -value "13" -objects $obj
+set_property -name "webtalk.xsim_launch_sim" -value "26" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -141,6 +144,7 @@ set obj [get_filesets sources_1]
 set files [list \
  [file normalize "${origin_dir}/sources/dp_ram.v"] \
  [file normalize "${origin_dir}/sources/line_delay.v"] \
+ [file normalize "${origin_dir}/sources/line_buffer.v"] \
  [file normalize "${origin_dir}/sources/top.v"] \
 ]
 add_files -norecurse -fileset $obj $files
@@ -153,7 +157,7 @@ add_files -norecurse -fileset $obj $files
 
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
-set_property -name "top" -value "line_delay" -objects $obj
+set_property -name "top" -value "line_buffer" -objects $obj
 
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets -quiet constrs_1] ""]} {
@@ -177,6 +181,8 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
+ [file normalize "${origin_dir}/sources/line_buffer.v"] \
+ [file normalize "${origin_dir}/testbench/line_buffer_tb.v"] \
  [file normalize "${origin_dir}/testbench/line_delay_tb.v"] \
 ]
 add_files -norecurse -fileset $obj $files
@@ -189,7 +195,8 @@ add_files -norecurse -fileset $obj $files
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "line_delay_tb" -objects $obj
+set_property -name "top" -value "line_buffer_tb" -objects $obj
+set_property -name "top_auto_set" -value "0" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
 # Set 'utils_1' fileset object
