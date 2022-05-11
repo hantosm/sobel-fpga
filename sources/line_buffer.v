@@ -1,5 +1,5 @@
 module line_buffer#(
-    WIDTH = 1920    
+    WIDTH = 2100
 )(
     input        clk,
     input        rst,
@@ -8,6 +8,10 @@ module line_buffer#(
     input        hsync,
     input        vsync,
     input        de,
+
+    output       hsync_dl,
+    output       vsync_dl,
+    output       de_dl,
 
     output [7:0] pixel_out1,
     output [7:0] pixel_out2,
@@ -20,11 +24,8 @@ module line_buffer#(
     output [7:0] pixel_out9
 );
 
-reg [7:0] pixel_matrix [9:1];
 
-// State machine to add padding to the incoming picture - TBA
-localparam TOP_LEFT = 4'd0;
-localparam FIRST_ROW = 4'd1;
+(* ram_style = "registers" *) reg [7:0] pixel_matrix [9:1];
 
 wire [7:0] line1;
 wire [7:0] line2;
@@ -43,38 +44,58 @@ always @ (posedge clk) begin
     pixel_matrix[1] <= pixel_matrix[2];
 end
 
+wire [7:0] line1_in;
+assign line1_in = de ? pixel_in : 8'h00;
 
 line_delay#(
-    .LINE_WIDTH (WIDTH - 3),
+    .LINE_WIDTH (WIDTH),
     .DATA_WIDTH (8)
 )linedl_1(
-    .clk               ( clk             ),
-    .rst               ( rst             ),
-    .pixel_in          ( pixel_matrix[7] ),
-    .data_valid        ( 1'b1      ),
-    .pixel_out         ( line1           )
+    .clk               ( clk      ),
+    .rst               ( rst      ),
+    .data_in           ( line1_in ),
+    .data_valid        ( 1'b1     ),
+    .data_out          ( line1    )
 );
 
 line_delay#(
-    .LINE_WIDTH (WIDTH - 3),
+    .LINE_WIDTH (WIDTH),
     .DATA_WIDTH (8)
 )linedl_2(
-    .clk               ( clk             ),
-    .rst               ( rst             ),
-    .pixel_in          ( pixel_matrix[4] ),
-    .data_valid        ( 1'b1            ),
-    .pixel_out         ( line2           )
+    .clk               ( clk   ),
+    .rst               ( rst   ),
+    .data_in           ( line1 ),
+    .data_valid        ( 1'b1  ),
+    .data_out          ( line2 )
 );
 
+wire [2:0] video_control;
+wire [2:0] video_control_dl;
+assign video_control = {de, vsync, hsync};
+line_delay#(
+    .LINE_WIDTH (WIDTH + 2),
+    .DATA_WIDTH (3)
+)videoctrl_dl(
+    .clk               ( clk              ),
+    .rst               ( rst              ),
+    .data_in           ( video_control    ),
+    .data_valid        ( 1'b1             ),
+    .data_out          ( video_control_dl )
+);
+
+assign hsync_dl = video_control_dl[0];
+assign vsync_dl = video_control_dl[1];
+assign de_dl    = video_control_dl[2];
+
 // Output assignment
-assign pixel_out1 = de ? pixel_matrix[1] : 0;
-assign pixel_out2 = de ? pixel_matrix[2] : 0;
-assign pixel_out3 = de ? pixel_matrix[3] : 0;
-assign pixel_out4 = de ? pixel_matrix[4] : 0;
-assign pixel_out5 = de ? pixel_matrix[5] : 0;
-assign pixel_out6 = de ? pixel_matrix[6] : 0;
-assign pixel_out7 = de ? pixel_matrix[7] : 0;
-assign pixel_out8 = de ? pixel_matrix[8] : 0;
-assign pixel_out9 = de ? pixel_matrix[9] : 0;
+assign pixel_out1 = pixel_matrix[1];
+assign pixel_out2 = pixel_matrix[2];
+assign pixel_out3 = pixel_matrix[3];
+assign pixel_out4 = pixel_matrix[4];
+assign pixel_out5 = pixel_matrix[5];
+assign pixel_out6 = pixel_matrix[6];
+assign pixel_out7 = pixel_matrix[7];
+assign pixel_out8 = pixel_matrix[8];
+assign pixel_out9 = pixel_matrix[9];
 
 endmodule

@@ -5,10 +5,10 @@ module line_delay #(
     input                     clk,
     input                     rst,
 
-    input  [DATA_WIDTH - 1:0] pixel_in,
+    input  [DATA_WIDTH - 1:0] data_in,
     input                     data_valid,
 
-    output [DATA_WIDTH - 1:0] pixel_out
+    output [DATA_WIDTH - 1:0] data_out
 );
 
 reg [$clog2(LINE_WIDTH) - 1:0] wr_ptr;
@@ -40,9 +40,9 @@ dp_ram #(
     .clk      ( clk        ),
     .we       ( data_valid ),
     .wr_addr  ( wr_ptr     ),
-    .wr_data  ( pixel_in   ),
+    .wr_data  ( data_in    ),
     .rd_addr  ( rd_ptr     ),
-    .rd_data  ( pixel_out  )
+    .rd_data  ( data_out   )
 );
 
 endmodule

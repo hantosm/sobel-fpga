@@ -1,18 +1,23 @@
 module line_buffer_tb();
 
+// Input registers
 reg clk;
 reg rst;
 reg [7:0] pixel_in;
+reg hsync;
+reg vsync;
+reg de;
 
 wire [7:0] pixel_out [9:1];
+wire hsync_dl;
+wire vsync_dl;
+wire de_dl;
 
 localparam WIDTH = 10;
 localparam DEPTH = 5;
 reg [3:0] h_cntr;
 reg [2:0] v_cntr;
-wire hsync;
-wire vsync;
-reg de;
+
 
 line_buffer#(
     .WIDTH(10)
@@ -23,6 +28,9 @@ line_buffer#(
     .hsync        ( hsync        ),
     .vsync        ( vsync        ),
     .de           ( de           ),
+    .de_dl        ( de_dl        ),
+    .hsync_dl     ( hsync_dl     ),
+    .vsync_dl     ( vsync_dl     ),
     .pixel_out1   ( pixel_out[1] ),
     .pixel_out2   ( pixel_out[2] ),
     .pixel_out3   ( pixel_out[3] ),
@@ -59,6 +67,10 @@ always @ (negedge clk) begin
     else
         pixel_in <= h_cntr + v_cntr * WIDTH;
 end
+
+always #1 if (pixel_in == 20'd30)
+            hsync <= 1'b1;
+        else hsync <= 1'b0;
 
 initial begin
     clk = 0;
