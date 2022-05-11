@@ -22,15 +22,15 @@ proc checkRequiredFiles { origin_dir} {
  "[file normalize "$origin_dir/sources/line_delay.v"]"\
  "[file normalize "$origin_dir/sources/line_buffer.v"]"\
  "[file normalize "$origin_dir/sources/top.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"]"\
+ "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"]"\
+ "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"]"\
  "[file normalize "$origin_dir/sources/edge_detector.v"]"\
- "[file normalize "$origin_dir/testbench/edge_detector_tb.v"]"\
  "[file normalize "$origin_dir/sources/line_buffer.v"]"\
  "[file normalize "$origin_dir/testbench/line_buffer_tb.v"]"\
+ "[file normalize "$origin_dir/testbench/edge_detector_tb.v"]"\
  "[file normalize "$origin_dir/testbench/line_delay_tb.v"]"\
   ]
   foreach ifile $files {
@@ -128,6 +128,7 @@ set proj_dir [get_property directory [current_project]]
 
 # Set project properties
 set obj [current_project]
+set_property -name "board_part_repo_paths" -value "C:/Users/hanto/AppData/Roaming/Xilinx/Vivado/2021.2/xhub/board_store/xilinx_board_store" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "enable_vhdl_2008" -value "1" -objects $obj
 set_property -name "ip_cache_permissions" -value "read write" -objects $obj
@@ -138,8 +139,7 @@ set_property -name "revised_directory_structure" -value "1" -objects $obj
 set_property -name "sim.central_dir" -value "$proj_dir/${_xil_proj_name_}.ip_user_files" -objects $obj
 set_property -name "sim.ip.auto_export_scripts" -value "1" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
-set_property -name "webtalk.xsim_launch_sim" -value "32" -objects $obj
-
+set_property -name "webtalk.xsim_launch_sim" -value "53" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -153,22 +153,22 @@ set files [list \
  [file normalize "${origin_dir}/sources/line_delay.v"] \
  [file normalize "${origin_dir}/sources/line_buffer.v"] \
  [file normalize "${origin_dir}/sources/top.v"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"] \
+ [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"] \
+ [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"] \
  [file normalize "${origin_dir}/sources/edge_detector.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
 # Set 'sources_1' fileset file properties for remote files
-set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"
+set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "EDIF" -objects $file_obj
 
-set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"
+set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "EDIF" -objects $file_obj
@@ -180,6 +180,7 @@ set_property -name "file_type" -value "EDIF" -objects $file_obj
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
 set_property -name "top" -value "line_buffer" -objects $obj
+set_property -name "top_auto_set" -value "0" -objects $obj
 
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets -quiet constrs_1] ""]} {
@@ -203,9 +204,9 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
- [file normalize "${origin_dir}/testbench/edge_detector_tb.v"] \
  [file normalize "${origin_dir}/sources/line_buffer.v"] \
  [file normalize "${origin_dir}/testbench/line_buffer_tb.v"] \
+ [file normalize "${origin_dir}/testbench/edge_detector_tb.v"] \
  [file normalize "${origin_dir}/testbench/line_delay_tb.v"] \
 ]
 add_files -norecurse -fileset $obj $files
@@ -218,7 +219,7 @@ add_files -norecurse -fileset $obj $files
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "edge_detector_tb" -objects $obj
+set_property -name "top" -value "line_buffer_tb" -objects $obj
 set_property -name "top_auto_set" -value "0" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 

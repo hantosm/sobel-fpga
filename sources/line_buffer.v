@@ -24,6 +24,19 @@ module line_buffer#(
     output [7:0] pixel_out9
 );
 
+// Delay video control signals to detect hsync rising edge
+reg hsync_dl1;
+wire hsync_rise;
+reg vsync_dl1;
+reg de_dl1;
+
+assign hsync_rise = (~hsync_dl1 && hsync);
+
+always @ (posedge clk) begin
+    hsync_dl1 <= hsync;
+    vsync_dl1 <= vsync;
+    de_dl1 <= de;
+end
 
 (* ram_style = "registers" *) reg [7:0] pixel_matrix [9:1];
 
@@ -31,7 +44,7 @@ wire [7:0] line1;
 wire [7:0] line2;
 
 always @ (posedge clk) begin
-    pixel_matrix[9] <= pixel_in;
+    pixel_matrix[9] <= de ? pixel_in : 8'h00;
     pixel_matrix[8] <= pixel_matrix[9];
     pixel_matrix[7] <= pixel_matrix[8];
     
@@ -52,7 +65,7 @@ line_delay#(
     .DATA_WIDTH (8)
 )linedl_1(
     .clk               ( clk      ),
-    .rst               ( rst      ),
+    .rst               ( hsync_rise      ),
     .data_in           ( line1_in ),
     .data_valid        ( 1'b1     ),
     .data_out          ( line1    )
@@ -63,7 +76,7 @@ line_delay#(
     .DATA_WIDTH (8)
 )linedl_2(
     .clk               ( clk   ),
-    .rst               ( rst   ),
+    .rst               ( hsync_rise   ),
     .data_in           ( line1 ),
     .data_valid        ( 1'b1  ),
     .data_out          ( line2 )
@@ -72,9 +85,11 @@ line_delay#(
 // Delay video control signals to align with output pixel
 wire [2:0] video_control;
 wire [2:0] video_control_dl;
-assign video_control = {de, vsync, hsync};
+
+assign video_control = {de_dl1, vsync_dl1, hsync_dl1};
+
 line_delay#(
-    .LINE_WIDTH (WIDTH + 2),
+    .LINE_WIDTH (WIDTH + 1),
     .DATA_WIDTH (3)
 )videoctrl_dl(
     .clk               ( clk              ),
