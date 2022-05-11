@@ -1,6 +1,6 @@
 // edge_detector receives 9 input pixels from line_buffer and returns if there is an edge or not
 module edge_detector#(
-    THRESHOLD = 400
+    THRESHOLD = 100  // subject to change
 )(
     input clk,
     input rst,
@@ -17,7 +17,7 @@ module edge_detector#(
 );
 
 // vertical and horizontal sobel filter 
-reg signed [12:0] vertical_sobel_out, horizontal_sobel_out;
+reg signed [9:0] vertical_sobel_out, horizontal_sobel_out;
 always @(posedge clk) begin
     if (rst) begin
         vertical_sobel_out <= 0;
@@ -28,14 +28,9 @@ always @(posedge clk) begin
     end
 end
 
-initial begin
-    vertical_sobel_out = 0;
-    horizontal_sobel_out = 0;
-end
-
 // if the absolute value of the vertical and horizontal sobel filter is greater than the threshold, then there is an edge
 always @(posedge clk) begin
-    edge_out <= (vertical_sobel_out > THRESHOLD) || (horizontal_sobel_out > THRESHOLD) || (vertical_sobel_out < -1 * THRESHOLD) || (horizontal_sobel_out < -1 * THRESHOLD);
+    edge_out <= (vertical_sobel_out > THRESHOLD) || (horizontal_sobel_out > THRESHOLD) || (vertical_sobel_out < -THRESHOLD) || (horizontal_sobel_out < -THRESHOLD);
 end
 
 
