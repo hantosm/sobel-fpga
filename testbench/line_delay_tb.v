@@ -19,9 +19,9 @@ line_delay#(
 )u_line_delay(
     .clk               ( clk       ),
     .rst               ( rst       ),
-    .pixel_in          ( pixel_in  ),
+    .data_in           ( pixel_in  ),
     .data_valid        ( 1'b1      ),
-    .pixel_out         ( pixel_out )
+    .data_out          ( pixel_out )
 );
 
 always #2 clk <= ~clk;
