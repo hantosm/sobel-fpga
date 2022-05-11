@@ -69,6 +69,7 @@ line_delay#(
     .data_out          ( line2 )
 );
 
+// Delay video control signals to align with output pixel
 wire [2:0] video_control;
 wire [2:0] video_control_dl;
 assign video_control = {de, vsync, hsync};
@@ -83,10 +84,6 @@ line_delay#(
     .data_out          ( video_control_dl )
 );
 
-assign hsync_dl = video_control_dl[0];
-assign vsync_dl = video_control_dl[1];
-assign de_dl    = video_control_dl[2];
-
 // Output assignment
 assign pixel_out1 = pixel_matrix[1];
 assign pixel_out2 = pixel_matrix[2];
@@ -97,5 +94,9 @@ assign pixel_out6 = pixel_matrix[6];
 assign pixel_out7 = pixel_matrix[7];
 assign pixel_out8 = pixel_matrix[8];
 assign pixel_out9 = pixel_matrix[9];
+
+assign hsync_dl = video_control_dl[0];
+assign vsync_dl = video_control_dl[1];
+assign de_dl    = video_control_dl[2];
 
 endmodule
