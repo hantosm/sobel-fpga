@@ -18,17 +18,17 @@
 proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"]"\
+ "[file normalize "$origin_dir/sources/hdmi_tx.edn"]"\
+ "[file normalize "$origin_dir/sources/hdmi_rx.edn"]"\
  "[file normalize "$origin_dir/sources/dp_ram.v"]"\
  "[file normalize "$origin_dir/sources/edge_detector.v"]"\
+ "[file normalize "$origin_dir/sources/hdmi_rx.v"]"\
+ "[file normalize "$origin_dir/sources/hdmi_tx.v"]"\
  "[file normalize "$origin_dir/sources/line_buffer.v"]"\
  "[file normalize "$origin_dir/sources/line_delay.v"]"\
  "[file normalize "$origin_dir/sources/sobel_wrapper.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc"]"\
+ "[file normalize "$origin_dir/sources/hdmi_top.v"]"\
+ "[file normalize "$origin_dir/constraints/hdmi_top.xdc"]"\
  "[file normalize "$origin_dir/testbench/edge_detector_tb.v"]"\
  "[file normalize "$origin_dir/sources/line_buffer.v"]"\
  "[file normalize "$origin_dir/testbench/line_buffer_tb.v"]"\
@@ -149,26 +149,26 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"] \
+ [file normalize "${origin_dir}/sources/hdmi_tx.edn"] \
+ [file normalize "${origin_dir}/sources/hdmi_rx.edn"] \
  [file normalize "${origin_dir}/sources/dp_ram.v"] \
  [file normalize "${origin_dir}/sources/edge_detector.v"] \
+ [file normalize "${origin_dir}/sources/hdmi_rx.v"] \
+ [file normalize "${origin_dir}/sources/hdmi_tx.v"] \
  [file normalize "${origin_dir}/sources/line_buffer.v"] \
  [file normalize "${origin_dir}/sources/line_delay.v"] \
  [file normalize "${origin_dir}/sources/sobel_wrapper.v"] \
+ [file normalize "${origin_dir}/sources/hdmi_top.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
 # Set 'sources_1' fileset file properties for remote files
-set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"
+set file "$origin_dir/sources/hdmi_tx.edn"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "EDIF" -objects $file_obj
 
-set file "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"
+set file "$origin_dir/sources/hdmi_rx.edn"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets sources_1] [list "*$file"]]
 set_property -name "file_type" -value "EDIF" -objects $file_obj
@@ -180,7 +180,6 @@ set_property -name "file_type" -value "EDIF" -objects $file_obj
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
 set_property -name "top" -value "hdmi_top" -objects $obj
-set_property -name "top_auto_set" -value "0" -objects $obj
 
 # Create 'constrs_1' fileset (if not found)
 if {[string equal [get_filesets -quiet constrs_1] ""]} {
@@ -191,9 +190,9 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 set obj [get_filesets constrs_1]
 
 # Add/Import constrs file and set constrs file properties
-set file "[file normalize ${origin_dir}/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc]"
+set file "[file normalize "$origin_dir/constraints/hdmi_top.xdc"]"
 set file_added [add_files -norecurse -fileset $obj [list $file]]
-set file "$origin_dir/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc"
+set file "$origin_dir/constraints/hdmi_top.xdc"
 set file [file normalize $file]
 set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
 set_property -name "file_type" -value "XDC" -objects $file_obj
