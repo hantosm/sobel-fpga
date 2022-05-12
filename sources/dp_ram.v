@@ -11,7 +11,7 @@ module dp_ram#(
     output reg [DATA_WIDTH - 1 : 0] rd_data
 );
 
-reg [DATA_WIDTH - 1 : 0] ram [2**ADDR_WIDTH - 1 : 0];
+(* ram_style = "block" *)reg [DATA_WIDTH - 1 : 0] ram [2**ADDR_WIDTH - 1 : 0];
 integer i;
 
 initial begin
