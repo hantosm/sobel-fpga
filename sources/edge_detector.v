@@ -13,11 +13,17 @@ module edge_detector#(
     input [7:0] pixel_in7,
     input [7:0] pixel_in8,
     input [7:0] pixel_in9,
+    input hsync,
+    input vsync,
+    input de,
+    output hsync_out,
+    output vsync_out,
+    output de_out,
     output reg edge_out
 );
 
 // vertical and horizontal sobel filter 
-reg signed [9:0] vertical_sobel_out, horizontal_sobel_out;
+reg signed [10:0] vertical_sobel_out, horizontal_sobel_out;
 always @(posedge clk) begin
     if (rst) begin
         vertical_sobel_out <= 0;
@@ -30,8 +36,27 @@ end
 
 // if the absolute value of the vertical and horizontal sobel filter is greater than the threshold, then there is an edge
 always @(posedge clk) begin
-    edge_out <= (vertical_sobel_out > THRESHOLD) || (horizontal_sobel_out > THRESHOLD) || (vertical_sobel_out < -THRESHOLD) || (horizontal_sobel_out < -THRESHOLD);
+    edge_out <= (vertical_sobel_out > THRESHOLD) || (horizontal_sobel_out > THRESHOLD) || (vertical_sobel_out < -1 * THRESHOLD) || (horizontal_sobel_out < -1 * THRESHOLD);
 end
 
+reg [1:0] hsync_dl = 0;
+reg [1:0] vsync_dl = 0;
+reg [1:0] de_dl = 0;
+
+always @(posedge clk) begin
+    if (rst) begin
+        hsync_dl <= 0;
+        vsync_dl <= 0;
+        de_dl <= 0;
+    end else begin
+        hsync_dl[1:0] <= {hsync_dl[0], hsync};
+        vsync_dl[1:0] <= {vsync_dl[0], vsync};
+        de_dl[1:0] <= {de_dl[0], de};
+    end
+end
+
+assign hsync_out = hsync_dl[1];
+assign vsync_out = vsync_dl[1];
+assign de_out = de_dl[1];
 
 endmodule

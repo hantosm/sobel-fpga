@@ -18,19 +18,20 @@
 proc checkRequiredFiles { origin_dir} {
   set status true
   set files [list \
- "[file normalize "$origin_dir/sources/dp_ram.v"]"\
- "[file normalize "$origin_dir/sources/line_delay.v"]"\
- "[file normalize "$origin_dir/sources/line_buffer.v"]"\
- "[file normalize "$origin_dir/sources/top.v"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"]"\
+ "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"]"\
  "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"]"\
- "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"]"\
+ "[file normalize "$origin_dir/sources/dp_ram.v"]"\
  "[file normalize "$origin_dir/sources/edge_detector.v"]"\
  "[file normalize "$origin_dir/sources/line_buffer.v"]"\
- "[file normalize "$origin_dir/testbench/line_buffer_tb.v"]"\
+ "[file normalize "$origin_dir/sources/line_delay.v"]"\
+ "[file normalize "$origin_dir/sources/sobel_wrapper.v"]"\
+ "[file normalize "$origin_dir/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc"]"\
  "[file normalize "$origin_dir/testbench/edge_detector_tb.v"]"\
+ "[file normalize "$origin_dir/sources/line_buffer.v"]"\
+ "[file normalize "$origin_dir/testbench/line_buffer_tb.v"]"\
  "[file normalize "$origin_dir/testbench/line_delay_tb.v"]"\
   ]
   foreach ifile $files {
@@ -128,7 +129,6 @@ set proj_dir [get_property directory [current_project]]
 
 # Set project properties
 set obj [current_project]
-set_property -name "board_part_repo_paths" -value "C:/Users/hanto/AppData/Roaming/Xilinx/Vivado/2021.2/xhub/board_store/xilinx_board_store" -objects $obj
 set_property -name "default_lib" -value "xil_defaultlib" -objects $obj
 set_property -name "enable_vhdl_2008" -value "1" -objects $obj
 set_property -name "ip_cache_permissions" -value "read write" -objects $obj
@@ -139,7 +139,7 @@ set_property -name "revised_directory_structure" -value "1" -objects $obj
 set_property -name "sim.central_dir" -value "$proj_dir/${_xil_proj_name_}.ip_user_files" -objects $obj
 set_property -name "sim.ip.auto_export_scripts" -value "1" -objects $obj
 set_property -name "simulator_language" -value "Mixed" -objects $obj
-set_property -name "webtalk.xsim_launch_sim" -value "53" -objects $obj
+set_property -name "webtalk.xsim_launch_sim" -value "76" -objects $obj
 
 # Create 'sources_1' fileset (if not found)
 if {[string equal [get_filesets -quiet sources_1] ""]} {
@@ -149,16 +149,16 @@ if {[string equal [get_filesets -quiet sources_1] ""]} {
 # Set 'sources_1' fileset object
 set obj [get_filesets sources_1]
 set files [list \
- [file normalize "${origin_dir}/sources/dp_ram.v"] \
- [file normalize "${origin_dir}/sources/line_delay.v"] \
- [file normalize "${origin_dir}/sources/line_buffer.v"] \
- [file normalize "${origin_dir}/sources/top.v"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.edn"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.edn"] \
+ [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_tx.v"] \
  [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_top.v"] \
- [file normalize "${origin_dir}/vivado_project/sobel_detection.srcs/sources_1/imports/new/hdmi_rx.v"] \
+ [file normalize "${origin_dir}/sources/dp_ram.v"] \
  [file normalize "${origin_dir}/sources/edge_detector.v"] \
+ [file normalize "${origin_dir}/sources/line_buffer.v"] \
+ [file normalize "${origin_dir}/sources/line_delay.v"] \
+ [file normalize "${origin_dir}/sources/sobel_wrapper.v"] \
 ]
 add_files -norecurse -fileset $obj $files
 
@@ -179,7 +179,7 @@ set_property -name "file_type" -value "EDIF" -objects $file_obj
 
 # Set 'sources_1' fileset properties
 set obj [get_filesets sources_1]
-set_property -name "top" -value "line_buffer" -objects $obj
+set_property -name "top" -value "hdmi_top" -objects $obj
 set_property -name "top_auto_set" -value "0" -objects $obj
 
 # Create 'constrs_1' fileset (if not found)
@@ -190,7 +190,13 @@ if {[string equal [get_filesets -quiet constrs_1] ""]} {
 # Set 'constrs_1' fileset object
 set obj [get_filesets constrs_1]
 
-# Empty (no sources present)
+# Add/Import constrs file and set constrs file properties
+set file "[file normalize ${origin_dir}/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc]"
+set file_added [add_files -norecurse -fileset $obj [list $file]]
+set file "$origin_dir/vivado_project/sobel_detection.srcs/constrs_1/imports/new/hdmi_top.xdc"
+set file [file normalize $file]
+set file_obj [get_files -of_objects [get_filesets constrs_1] [list "*$file"]]
+set_property -name "file_type" -value "XDC" -objects $file_obj
 
 # Set 'constrs_1' fileset properties
 set obj [get_filesets constrs_1]
@@ -204,9 +210,9 @@ if {[string equal [get_filesets -quiet sim_1] ""]} {
 # Set 'sim_1' fileset object
 set obj [get_filesets sim_1]
 set files [list \
+ [file normalize "${origin_dir}/testbench/edge_detector_tb.v"] \
  [file normalize "${origin_dir}/sources/line_buffer.v"] \
  [file normalize "${origin_dir}/testbench/line_buffer_tb.v"] \
- [file normalize "${origin_dir}/testbench/edge_detector_tb.v"] \
  [file normalize "${origin_dir}/testbench/line_delay_tb.v"] \
 ]
 add_files -norecurse -fileset $obj $files
@@ -219,7 +225,7 @@ add_files -norecurse -fileset $obj $files
 
 # Set 'sim_1' fileset properties
 set obj [get_filesets sim_1]
-set_property -name "top" -value "line_buffer_tb" -objects $obj
+set_property -name "top" -value "edge_detector_tb" -objects $obj
 set_property -name "top_auto_set" -value "0" -objects $obj
 set_property -name "top_lib" -value "xil_defaultlib" -objects $obj
 
@@ -229,83 +235,6 @@ set obj [get_filesets utils_1]
 
 # Set 'utils_1' fileset properties
 set obj [get_filesets utils_1]
-
-
-# Adding sources referenced in BDs, if not already added
-
-
-# Proc to create BD design_1
-proc cr_bd_design_1 { parentCell } {
-
-  # CHANGE DESIGN NAME HERE
-  set design_name design_1
-
-  common::send_gid_msg -ssname BD::TCL -id 2010 -severity "INFO" "Currently there is no design <$design_name> in project, so creating one..."
-
-  create_bd_design $design_name
-
-  set bCheckIPsPassed 1
-##################################################################
-# There are no IPs, Modules, nor sources to check.
-##################################################################
-
-  if { $bCheckIPsPassed != 1 } {
-    common::send_gid_msg -ssname BD::TCL -id 2023 -severity "WARNING" "Will not continue with creation of design due to the error(s) above."
-    return 3
-  }
-
-  variable script_folder
-
-  if { $parentCell eq "" } {
-     set parentCell [get_bd_cells /]
-  }
-
-  # Get object for parentCell
-  set parentObj [get_bd_cells $parentCell]
-  if { $parentObj == "" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2090 -severity "ERROR" "Unable to find parent cell <$parentCell>!"}
-     return
-  }
-
-  # Make sure parentObj is hier blk
-  set parentType [get_property TYPE $parentObj]
-  if { $parentType ne "hier" } {
-     catch {common::send_gid_msg -ssname BD::TCL -id 2091 -severity "ERROR" "Parent <$parentObj> has TYPE = <$parentType>. Expected to be <hier>."}
-     return
-  }
-
-  # Save current instance; Restore later
-  set oldCurInst [current_bd_instance .]
-
-  # Set parent object as current
-  current_bd_instance $parentObj
-
-
-  # Create interface ports
-
-  # Create ports
-
-  # Create port connections
-
-  # Create address segments
-
-
-  # Restore current instance
-  current_bd_instance $oldCurInst
-
-  save_bd_design
-common::send_gid_msg -ssname BD::TCL -id 2050 -severity "WARNING" "This Tcl script was generated from a block design that has not been validated. It is possible that design <$design_name> may result in errors during validation."
-
-  close_bd_design $design_name 
-}
-# End of cr_bd_design_1()
-cr_bd_design_1 ""
-set_property REGISTERED_WITH_MANAGER "1" [get_files design_1.bd ] 
-set_property SYNTH_CHECKPOINT_MODE "Hierarchical" [get_files design_1.bd ] 
-
-
-# Create wrapper file for design_1.bd
-make_wrapper -files [get_files design_1.bd] -import -top
 
 set idrFlowPropertiesConstraints ""
 catch {
