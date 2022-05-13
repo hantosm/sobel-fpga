@@ -108,7 +108,7 @@ line_buffer#(
 wire edge_out_r, edge_out_g, edge_out_b;
 
 edge_detector#(
-    .THRESHOLD(400)
+    .THRESHOLD(100)
 )edge_detector_r(
     .clk(clk),
     .rst(rst),
@@ -132,7 +132,7 @@ edge_detector#(
 );
 
 edge_detector#(
-    .THRESHOLD(400)
+    .THRESHOLD(100)
 )edge_detector_g(
     .clk(clk),
     .rst(rst),
@@ -156,7 +156,7 @@ edge_detector#(
 );
 
 edge_detector#(
-    .THRESHOLD(400)
+    .THRESHOLD(100)
 )edge_detector_b(
     .clk(clk),
     .rst(rst),

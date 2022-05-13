@@ -16,9 +16,7 @@ reg [$clog2(LINE_WIDTH) - 1:0] rd_ptr;
 
 // write address construction
 always @(posedge clk ) begin
-    if (rst)
-        wr_ptr <= 0;
-    else if (data_valid)
+    if (data_valid)
         wr_ptr <= rd_ptr;
 end
 
@@ -27,9 +25,9 @@ always @(posedge clk) begin
     if (rst)
         rd_ptr <= 0;
     else if (data_valid)
-        if (rd_ptr == LINE_WIDTH - 1)
-            rd_ptr <= 0;
-        else
+        // if (rd_ptr == LINE_WIDTH - 1)
+        //     rd_ptr <= 0;
+        // else
             rd_ptr <= rd_ptr + 1'b1;
 end
 
