@@ -13,8 +13,8 @@ wire hsync_dl;
 wire vsync_dl;
 wire de_dl;
 
-localparam WIDTH = 20;
-localparam WIDTH_VISIBLE = 12;
+localparam WIDTH = 30;
+localparam WIDTH_VISIBLE = 22;
 localparam HSYNC_FP = 2;
 localparam HSYNC_PW = 1;
 localparam HSYNC_BP = 5;
@@ -53,14 +53,14 @@ line_buffer#(
 );
 
 always #2 clk <= ~clk;
-always @ (posedge clk) begin
+always @ (negedge clk) begin
     if (rst || h_cntr == WIDTH - 1)
         h_cntr <= 0;
     else
         h_cntr <= h_cntr + 1;
 end
 
-always @ (posedge clk) begin
+always @ (negedge clk) begin
     if (rst)
         v_cntr <= 0;
     else if (h_cntr == WIDTH - 1) begin
@@ -71,7 +71,7 @@ always @ (posedge clk) begin
     end
 end
 
-always @ (posedge clk) begin
+always @ (*) begin
     if (rst)
         pixel_in <= 0;
     else
@@ -79,8 +79,8 @@ always @ (posedge clk) begin
 end
 
 always @(*) begin
-    hsync <= ((h_cntr >= WIDTH_VISIBLE + HSYNC_FP) && (h_cntr <= WIDTH_VISIBLE + HSYNC_FP + HSYNC_PW));
-    vsync <= ((v_cntr >= DEPTH_VISIBLE + VSYNC_FP) && (v_cntr <= DEPTH_VISIBLE + VSYNC_FP + VSYNC_PW));
+    hsync <= ((h_cntr >= WIDTH_VISIBLE + HSYNC_FP) && (h_cntr < WIDTH_VISIBLE + HSYNC_FP + HSYNC_PW));
+    vsync <= ((v_cntr >= DEPTH_VISIBLE + VSYNC_FP) && (v_cntr < DEPTH_VISIBLE + VSYNC_FP + VSYNC_PW));
     de <= ((h_cntr >= 0 && h_cntr < WIDTH_VISIBLE) && (v_cntr >= 0 && v_cntr < DEPTH_VISIBLE));
 end
 

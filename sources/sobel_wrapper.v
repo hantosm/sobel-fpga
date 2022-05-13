@@ -5,18 +5,22 @@
 module sobel_wrapper#(
     MAX_LINE_WIDTH = 2100
 )(
-    input         clk,
-    input         rst,
+    input        clk,
+    input        rst,
 
-    input [23:0]  rgb_in,
-    input         hsync,
-    input         vsync,
-    input         de,    
+    input [7:0]  red_i,
+    input [7:0]  green_i,
+    input [7:0]  blue_i,
+    input        hsync,
+    input        vsync,
+    input        de,    
 
-    output [23:0] edge_out,
-    output        hsync_out,
-    output        vsync_out,
-    output        de_out
+    output [7:0] red_o,
+    output [7:0] green_o,
+    output [7:0] blue_o,
+    output       hsync_out,
+    output       vsync_out,
+    output       de_out
 );
 
 wire [2:0] hsync_dl, vsync_dl, de_dl;
@@ -27,27 +31,24 @@ wire [7:0] pixel_out_b [9:1];
 line_buffer#(
     .WIDTH(MAX_LINE_WIDTH)
 ) line_buffer_r(
-    .clk(clk),
-    .rst(rst),
-
-    .pixel_in(rgb_in[7:0]),
-    .hsync(hsync),
-    .vsync(vsync),
-    .de(de),
-
-    .pixel_out1(pixel_out_r[1]),
-    .pixel_out2(pixel_out_r[2]),
-    .pixel_out3(pixel_out_r[3]),
-    .pixel_out4(pixel_out_r[4]),
-    .pixel_out5(pixel_out_r[5]),
-    .pixel_out6(pixel_out_r[6]),
-    .pixel_out7(pixel_out_r[7]),
-    .pixel_out8(pixel_out_r[8]),
-    .pixel_out9(pixel_out_r[9]),
-
-    .hsync_dl(hsync_dl[0]),
-    .vsync_dl(vsync_dl[0]),
-    .de_dl(de_dl[0])
+    .clk        ( clk ),
+    .rst        ( rst ),
+    .pixel_in   ( red_i ),
+    .hsync      ( hsync ),
+    .vsync      ( vsync ),
+    .de         ( de ),
+    .pixel_out1 ( pixel_out_r[1] ),
+    .pixel_out2 ( pixel_out_r[2] ),
+    .pixel_out3 ( pixel_out_r[3] ),
+    .pixel_out4 ( pixel_out_r[4] ),
+    .pixel_out5 ( pixel_out_r[5]),
+    .pixel_out6 ( pixel_out_r[6] ),
+    .pixel_out7 ( pixel_out_r[7] ),
+    .pixel_out8 ( pixel_out_r[8] ),
+    .pixel_out9 ( pixel_out_r[9] ),
+    .hsync_dl   ( hsync_dl[0] ),
+    .vsync_dl   ( vsync_dl[0] ),
+    .de_dl      ( de_dl[0] )
 
 );
 
@@ -57,7 +58,7 @@ line_buffer#(
     .clk(clk),
     .rst(rst),
 
-    .pixel_in(rgb_in[15:8]),
+    .pixel_in(green_i),
     .hsync(hsync),
     .vsync(vsync),
     .de(de),
@@ -84,7 +85,7 @@ line_buffer#(
     .clk(clk),
     .rst(rst),
 
-    .pixel_in(rgb_in[23:16]),
+    .pixel_in(blue_i),
     .hsync(hsync),
     .vsync(vsync),
     .de(de),
@@ -179,5 +180,6 @@ edge_detector#(
     .edge_out(edge_out_b)
 );
 
-assign edge_out = {24{edge_out_b | edge_out_g | edge_out_r}};
+assign {blue_o, green_o, red_o} = {24{edge_out_b | edge_out_g | edge_out_r}};
+
 endmodule

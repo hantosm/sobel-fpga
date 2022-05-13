@@ -154,11 +154,15 @@ sobel_wrapper#(
 )sobel_wrapper_u(
    .clk(rx_clk),
    .rst(rst),
-   .rgb_in({rx_blue, rx_green, rx_red}),
+   .red_i(rx_red),
+   .green_i(rx_green),
+   .blue_i(rx_blue),
    .de(rx_dv),
    .hsync(rx_hs),
    .vsync(rx_vs),
-   .edge_out({tx_blue, tx_green, tx_red}),
+   .red_o(tx_red),
+   .green_o(tx_green),
+   .blue_o(tx_blue),
    .de_out(tx_dv),
    .hsync_out(tx_hs),
    .vsync_out(tx_vs)

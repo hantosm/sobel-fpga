@@ -2,24 +2,40 @@ module line_delay_tb();
 
 reg clk;
 reg rst;
-reg [5:0] pixel_in;
+reg [7:0] pixel_in;
 reg data_valid;
 
-wire [5:0] pixel_out;
+wire [7:0] pixel_out;
 
-localparam WIDTH = 10;
-localparam DEPTH = 5;
+localparam WIDTH = 20;
+localparam WIDTH_VISIBLE = 12;
+localparam HSYNC_FP = 2;
+localparam HSYNC_PW = 1;
+localparam HSYNC_BP = 5;
 
-reg [3:0] h_cntr;
-reg [2:0] v_cntr;
+localparam DEPTH = 10;
+localparam DEPTH_VISIBLE = 5;
+localparam VSYNC_FP = 1;
+localparam VSYNC_PW = 1;
+localparam VSYNC_BP = 2;
+
+reg [10:0] h_cntr;
+reg [10:0] v_cntr;
+wire hsync_rise;
+reg hsync;
+reg vsync;
+reg de;
+
+wire [7:0] data_in;
+assign data_in = de ? pixel_in : 0;
 
 line_delay#(
-    .LINE_WIDTH(WIDTH),
-    .DATA_WIDTH(6)
+    .LINE_WIDTH(2 * WIDTH),
+    .DATA_WIDTH(8)
 )u_line_delay(
     .clk               ( clk       ),
-    .rst               ( rst       ),
-    .data_in           ( pixel_in  ),
+    .rst               ( hsync_rise || rst   ),
+    .data_in           ( data_in  ),
     .data_valid        ( 1'b1      ),
     .data_out          ( pixel_out )
 );
@@ -32,7 +48,7 @@ always @ (posedge clk) begin
         h_cntr <= h_cntr + 1;
 end
 
-always @(posedge clk) begin
+always @ (posedge clk) begin
     if (rst)
         v_cntr <= 0;
     else if (h_cntr == WIDTH - 1) begin
@@ -49,6 +65,14 @@ always @ (negedge clk) begin
     else
         pixel_in <= h_cntr + v_cntr * WIDTH;
 end
+
+always @(*) begin
+    hsync <= ((h_cntr >= WIDTH_VISIBLE + HSYNC_FP) && (h_cntr <= WIDTH_VISIBLE + HSYNC_FP + HSYNC_PW));
+    vsync <= ((v_cntr >= DEPTH_VISIBLE + VSYNC_FP) && (v_cntr <= DEPTH_VISIBLE + VSYNC_FP + VSYNC_PW));
+    de <= ((h_cntr >= 0 && h_cntr < WIDTH_VISIBLE) && (v_cntr >= 0 && v_cntr < DEPTH_VISIBLE));
+end
+
+assign hsync_rise = (h_cntr == WIDTH_VISIBLE + HSYNC_FP);
 
 initial begin
     clk = 0;

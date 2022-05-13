@@ -26,11 +26,8 @@ module line_buffer#(
 
 // Delay video control signals to detect hsync rising edge
 reg hsync_dl1;
-wire hsync_rise;
 reg vsync_dl1;
 reg de_dl1;
-
-assign hsync_rise = (~hsync_dl1 && hsync);
 
 always @ (posedge clk) begin
     hsync_dl1 <= hsync;
@@ -38,23 +35,35 @@ always @ (posedge clk) begin
     de_dl1 <= de;
 end
 
+// Hsync rising edge is the reset signal for the line delay modules
+wire hsync_rise;
+assign hsync_rise = (~hsync_dl1 && hsync);
+
+// Output pixel matrix
 (* ram_style = "registers" *) reg [7:0] pixel_matrix [9:1];
 
 wire [7:0] line1;
 wire [7:0] line2;
 
+integer i;
 always @ (posedge clk) begin
-    pixel_matrix[9] <= de ? pixel_in : 8'h00;
-    pixel_matrix[8] <= pixel_matrix[9];
-    pixel_matrix[7] <= pixel_matrix[8];
-    
-    pixel_matrix[6] <= line1;
-    pixel_matrix[5] <= pixel_matrix[6];
-    pixel_matrix[4] <= pixel_matrix[5];
+    if (rst) begin
+        for (i = 1; i < 9; i = i + 1)
+            pixel_matrix[i] <= 0;
+    end
+    else begin
+        pixel_matrix[9] <= de ? pixel_in : 8'h00;
+        pixel_matrix[8] <= pixel_matrix[9];
+        pixel_matrix[7] <= pixel_matrix[8];
+        
+        pixel_matrix[6] <= line1;
+        pixel_matrix[5] <= pixel_matrix[6];
+        pixel_matrix[4] <= pixel_matrix[5];
 
-    pixel_matrix[3] <= line2;
-    pixel_matrix[2] <= pixel_matrix[3];
-    pixel_matrix[1] <= pixel_matrix[2];
+        pixel_matrix[3] <= line2;
+        pixel_matrix[2] <= pixel_matrix[3];
+        pixel_matrix[1] <= pixel_matrix[2];
+    end
 end
 
 wire [7:0] line1_in;
@@ -64,22 +73,22 @@ line_delay#(
     .LINE_WIDTH (WIDTH),
     .DATA_WIDTH (8)
 )linedl_1(
-    .clk               ( clk      ),
-    .rst               ( hsync_rise      ),
-    .data_in           ( line1_in ),
-    .data_valid        ( 1'b1     ),
-    .data_out          ( line1    )
+    .clk               ( clk        ),
+    .rst               ( hsync_rise ),
+    .data_in           ( line1_in   ),
+    .data_valid        ( 1'b1       ),
+    .data_out          ( line1      )
 );
 
 line_delay#(
     .LINE_WIDTH (WIDTH),
     .DATA_WIDTH (8)
 )linedl_2(
-    .clk               ( clk   ),
-    .rst               ( hsync_rise   ),
-    .data_in           ( line1 ),
-    .data_valid        ( 1'b1  ),
-    .data_out          ( line2 )
+    .clk               ( clk        ),
+    .rst               ( hsync_rise ),
+    .data_in           ( line1      ),
+    .data_valid        ( 1'b1       ),
+    .data_out          ( line2      )
 );
 
 // Delay video control signals to align with output pixel
@@ -93,7 +102,7 @@ line_delay#(
     .DATA_WIDTH (3)
 )videoctrl_dl(
     .clk               ( clk              ),
-    .rst               ( rst              ),
+    .rst               ( hsync_rise       ),
     .data_in           ( video_control    ),
     .data_valid        ( 1'b1             ),
     .data_out          ( video_control_dl )
