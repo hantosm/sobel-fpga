@@ -150,7 +150,7 @@ wire [7:0] tx_red, tx_green, tx_blue;
 wire tx_dv, tx_hs, tx_vs;
 // Instantiate wrapper
 sobel_wrapper#(
-   .MAX_LINE_WIDTH(3000)
+   .MAX_LINE_WIDTH(2200)
 )sobel_wrapper_u(
    .clk(rx_clk),
    .rst(rst),
