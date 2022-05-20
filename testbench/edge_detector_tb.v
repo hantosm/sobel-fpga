@@ -41,7 +41,20 @@ always #5 clk <= ~clk;
 initial begin
     clk = 0;
     rst = 1;
-    
+    pixel_in1 = 0;
+    pixel_in2 = 0;
+    pixel_in3 = 0;
+    pixel_in4 = 0;
+    pixel_in5 = 0;
+    pixel_in6 = 0;
+    pixel_in7 = 0;
+    pixel_in8 = 0;
+    pixel_in9 = 0;
+    hsync = 0;
+    vsync = 0;
+    de = 0;
+
+
     // test case where all pixels are the same
     #46;
     rst = 0;
