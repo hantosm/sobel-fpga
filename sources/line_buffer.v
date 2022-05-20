@@ -25,19 +25,19 @@ module line_buffer#(
 );
 
 // Delay video control signals to detect hsync rising edge
-reg hsync_dl1;
-reg vsync_dl1;
-reg de_dl1;
+reg [1:0] hsync_dl1;
+reg [1:0] vsync_dl1;
+reg [1:0] de_dl1;
 
 always @ (posedge clk) begin
-    hsync_dl1 <= hsync;
-    vsync_dl1 <= vsync;
-    de_dl1 <= de;
+    hsync_dl1 <= {hsync_dl1[1:0], hsync};
+    vsync_dl1 <= {vsync_dl1[1:0], vsync};
+    de_dl1    <= {de_dl1[1:0], de};
 end
 
 // Hsync rising edge is the reset signal for the line delay modules
 wire hsync_rise;
-assign hsync_rise = (~hsync_dl1 && hsync);
+assign hsync_rise = (~hsync_dl1[0] && hsync);
 
 // Output pixel matrix
 (* ram_style = "registers" *) reg [7:0] pixel_matrix [9:1];
@@ -95,10 +95,10 @@ line_delay#(
 wire [2:0] video_control;
 wire [2:0] video_control_dl;
 
-assign video_control = {de_dl1, vsync_dl1, hsync_dl1};
+assign video_control = {de_dl1[1], vsync_dl1[1], hsync_dl1[1]};
 
 line_delay#(
-    .LINE_WIDTH (WIDTH + 1),
+    .LINE_WIDTH (WIDTH + 3),
     .DATA_WIDTH (3)
 )videoctrl_dl(
     .clk               ( clk              ),
